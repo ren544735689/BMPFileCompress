@@ -18,6 +18,7 @@ int main()
 
 	RLCCompress rlccompress(bmpfile.getinfo());
 	rlccompress.compress();
+	rlccompress.decompress();
 
 	//float ta[2][3] = { {1.0,2.0,3.0},{4.0,5.0,6.0} };
 	//float **p = new float *[2];//¿ª±ÙÐÐ¿Õ¼ä

@@ -3,8 +3,8 @@
 #ifndef _READBMPFILE_
 #define _READBMPFILE_
 
-#define MAXHEIGHT 3300
-#define MAXWIDTH 2500
+#define MAXHEIGHT 2000
+#define MAXWIDTH 1800
 
 #include<string>
 #include<iostream>

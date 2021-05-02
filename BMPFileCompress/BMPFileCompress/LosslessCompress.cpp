@@ -15,6 +15,8 @@ void RLCCompress::compress()
 	int item;
 	int recnum;
 
+	unsigned char iitem, rrecnum;
+
 	cout << "R:" << endl;
 	for (int i = 0; i < info.height; i++) {
 		now = 0;
@@ -23,8 +25,11 @@ void RLCCompress::compress()
 		while (1) {
 			now++;
 			if (now == info.width) {
-				fwrite(&item, 1, 1, fp);
-				fwrite(&recnum, 1, 1, fp);
+				iitem = item;
+				rrecnum = recnum;
+
+				fwrite(&iitem, 1, 1, fp);
+				fwrite(&rrecnum, 1, 1, fp);
 				break;
 			}
 
@@ -32,8 +37,11 @@ void RLCCompress::compress()
 				recnum++;
 			}
 			else {
-				fwrite(&item, 1, 1, fp);
-				fwrite(&recnum, 1, 1, fp);
+				iitem = item;
+				rrecnum = recnum;
+
+				fwrite(&iitem, 1, 1, fp);
+				fwrite(&rrecnum, 1, 1, fp);
 				item = info.R[i * info.width + now];
 				recnum = 1;
 			}
@@ -47,8 +55,11 @@ void RLCCompress::compress()
 		while (1) {
 			now++;
 			if (now == info.width) {
-				fwrite(&item, 1, 1, fp);
-				fwrite(&recnum, 1, 1, fp);
+				iitem = item;
+				rrecnum = recnum;
+
+				fwrite(&iitem, 1, 1, fp);
+				fwrite(&rrecnum, 1, 1, fp);
 				break;
 			}
 
@@ -56,8 +67,11 @@ void RLCCompress::compress()
 				recnum++;
 			}
 			else {
-				fwrite(&item, 1, 1, fp);
-				fwrite(&recnum, 1, 1, fp);
+				iitem = item;
+				rrecnum = recnum;
+
+				fwrite(&iitem, 1, 1, fp);
+				fwrite(&rrecnum, 1, 1, fp);
 				item = info.G[i * info.width + now];
 				recnum = 1;
 			}
@@ -71,8 +85,11 @@ void RLCCompress::compress()
 		while (1) {
 			now++;
 			if (now == info.width) {
-				fwrite(&item, 1, 1, fp);
-				fwrite(&recnum, 1, 1, fp);
+				iitem = item;
+				rrecnum = recnum;
+
+				fwrite(&iitem, 1, 1, fp);
+				fwrite(&rrecnum, 1, 1, fp);
 				break;
 			}
 
@@ -80,8 +97,11 @@ void RLCCompress::compress()
 				recnum++;
 			}
 			else {
-				fwrite(&item, 1, 1, fp);
-				fwrite(&recnum, 1, 1, fp);
+				iitem = item;
+				rrecnum = recnum;
+
+				fwrite(&iitem, 1, 1, fp);
+				fwrite(&rrecnum, 1, 1, fp);
 				item = info.B[i * info.width + now];
 				recnum = 1;
 			}
@@ -105,34 +125,181 @@ void RLCCompress::decompress()
 	}
 	fseek(ifp, 56, SEEK_SET);			// 56 is the total BMP head size
 
-	int color;							// the current color
-	int recnum;							// the current color recursion number
+	int color;							// the new color
+	int nowcolor;						// the previous color
+	int recnum;							// the new color recursion number
+	int nowrecnum;						// the current recursion number
 	
-	int nowheight = 0;					// now process height
-	int nowwidth = 0;
+	unsigned char ccolor, rrecnum;
 
+	int nowheight = 0;					// now process row
+	int nowwidth = 0;					// now process column
+
+	int* R;
+	int* G;
+	int* B;
+	R = new int[info.height*info.width];
+	G = new int[info.height*info.width];
+	B = new int[info.height*info.width];
+	int step = 0;						// used to fill the RGB field
+
+	//read R
 	while (1) {
-		fread(&color, 1, 1, ifp);
-		fread(&recnum, 1, 1, ifp);
+		fread(&ccolor, 1, 1, ifp);
+		fread(&rrecnum, 1, 1, ifp);
 
-		nowwidth += recnum;
-		if (nowwidth == info.width) {	// if we process one line
-			nowwidth = 0;
+		color = (int)ccolor;
+		recnum = (int)rrecnum;
+
+		if (nowwidth == 0) {			// means the start of process
+			nowcolor = color;
+			nowrecnum = recnum;
+			nowwidth += recnum;
+			continue;					// we take the first data as initial data
+		}
+										// otherwise, we have already read some data
+		if (nowcolor == color) {		// if color is the same
+			nowwidth += recnum;
+		}
+		else {							// otherwise color not same
+			for (int i = step; i < step + nowrecnum; i++) {
+				R[i] = nowcolor;		// write previous color data
+			}
+			step += nowrecnum;
+			nowwidth += recnum;
+			nowcolor = color;
+			nowrecnum = recnum;
+		}
+
+		if (nowwidth == info.width) {	// if we process the whole line
+			for (int i = step; i < step + nowrecnum; i++) {
+				R[i] = nowcolor;
+			}
+
+			step += nowrecnum;			// change the step
+			nowwidth = 0;				// reset nowwidth
 			nowheight++;
 
 		}
 		if (nowheight == info.height) {	// if we process one color field
-			nowheight = 0;
+			nowheight = 0;				// reset nowheight & nowwidth for next recursion
 			nowwidth = 0;
 			break;
 		}
 	}
 
-	/*for (j = 1; j <= width; j++) {
-		fread(&B[i][j], 1, 1, f);
-		fread(&G[i][j], 1, 1, f);
-		fread(&R[i][j], 1, 1, f);
+	//read G
+	while (1) {
+		fread(&ccolor, 1, 1, ifp);
+		fread(&rrecnum, 1, 1, ifp);
+
+		color = (int)ccolor;
+		recnum = (int)rrecnum;
+
+		if (nowwidth == 0) {			// means the start of process
+			nowcolor = color;
+			nowrecnum = recnum;
+			nowwidth += recnum;
+			continue;					// we take the first data as initial data
+		}
+		// otherwise, we have already read some data
+		if (nowcolor == color) {		// if color is the same
+			nowwidth += recnum;
+		}
+		else {							// otherwise color not same
+			for (int i = step; i < step + nowrecnum; i++) {
+				G[i] = nowcolor;		// write previous color data
+			}
+			step += nowrecnum;
+			nowwidth += recnum;
+			nowcolor = color;
+			nowrecnum = recnum;
+		}
+
+		if (nowwidth == info.width) {	// if we process the whole line
+			for (int i = step; i < step + nowrecnum; i++) {
+				G[i] = nowcolor;
+			}
+
+			step += nowrecnum;			// change the step
+			nowwidth = 0;				// reset nowwidth
+			nowheight++;
+
+		}
+		if (nowheight == info.height) {	// if we process one color field
+			nowheight = 0;				// reset nowheight & nowwidth for next recursion
+			nowwidth = 0;
+			break;
+		}
 	}
-	if (offset != 0) fread(&a, offset, 1, f);*/
+
+	//read B
+	while (1) {
+		fread(&ccolor, 1, 1, ifp);
+		fread(&rrecnum, 1, 1, ifp);
+
+		color = (int)ccolor;
+		recnum = (int)rrecnum;
+
+		if (nowwidth == 0) {			// means the start of process
+			nowcolor = color;
+			nowrecnum = recnum;
+			nowwidth += recnum;
+			continue;					// we take the first data as initial data
+		}
+		// otherwise, we have already read some data
+		if (nowcolor == color) {		// if color is the same
+			nowwidth += recnum;
+		}
+		else {							// otherwise color not same
+			for (int i = step; i < step + nowrecnum; i++) {
+				B[i] = nowcolor;		// write previous color data
+			}
+			step += nowrecnum;
+			nowwidth += recnum;
+			nowcolor = color;
+			nowrecnum = recnum;
+		}
+
+		if (nowwidth == info.width) {	// if we process the whole line
+			for (int i = step; i < step + nowrecnum; i++) {
+				B[i] = nowcolor;
+			}
+
+			step += nowrecnum;			// change the step
+			nowwidth = 0;				// reset nowwidth
+			nowheight++;
+
+		}
+		if (nowheight == info.height) {	// if we process one color field
+			nowheight = 0;				// reset nowheight & nowwidth for next recursion
+			nowwidth = 0;
+			break;
+		}
+	}
+
+	int a = 0;
+	unsigned char r, g, b;
+	for (int i = 0; i < info.height; i++) {
+		for (int j = 0; j < info.width; j++) {
+			r = R[i*info.height + j];
+			g = G[i*info.height + j];
+			b = B[i*info.height + j];
+
+			//y = (double)colormap[i][j].Blue*0.114 + (double)colormap[i][j].Green*0.587 + (double)colormap[i][j].Red*0.299;
+			//u = (double)colormap[i][j].Blue*0.437 + (double)colormap[i][j].Green*(-0.289) + (double)colormap[i][j].Red*(-0.148);
+			//v = (double)colormap[i][j].Blue*(-0.100) + (double)colormap[i][j].Green*(-0.515) + (double)colormap[i][j].Red*0.615;
+
+			if ((int)b != 205) {
+				cout << "ok!" << endl;
+			}
+
+			fwrite(&b, 1, 1, ofp);
+			fwrite(&g, 1, 1, ofp);
+			fwrite(&r, 1, 1, ofp);
+		}
+		if (info.offset != 0) fwrite(&a, info.offset, 1, ofp);
+	}
+
 }
 
