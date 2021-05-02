@@ -6,9 +6,8 @@
 #define MAXHEIGHT 3300
 #define MAXWIDTH 2500
 
-#include<iostream>
 #include<string>
-#include<stdlib.h>
+#include<iostream>
 using namespace std;
 
 typedef struct {
@@ -61,9 +60,9 @@ struct BMPInfo {
 	int width;
 	int offset;
 
-	int **R;
-	int **G;
-	int **B;
+	int *R;
+	int *G;
+	int *B;
 
 	string filename;
 };
@@ -80,9 +79,9 @@ protected:
 	int offset;				// BMP file offset
 	int bit;				// type of BMP color(24-bit)
 
-	int** R;			// store R vector
-	int** G;			// store G vector
-	int** B;			// store B vector
+	int* R;			// store R vector
+	int* G;			// store G vector
+	int* B;			// store B vector
 
 public:
 	// ctors
@@ -118,9 +117,9 @@ public:
 
 	int getheight() { return height; }
 	int getwidth() { return width; }
-	int** getR() { return R; }
-	int** getG() { return G; }
-	int** getB() { return B; }
+	int* getR() { return R; }
+	int* getG() { return G; }
+	int* getB() { return B; }
 
 	void output(string after);				// This function output the bmp head to another file
 };

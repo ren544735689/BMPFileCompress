@@ -1,3 +1,5 @@
+#pragma warning(disable:4996)
+
 #ifndef _COMPRESS
 #define _COMPRESS
 

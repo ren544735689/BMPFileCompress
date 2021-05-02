@@ -1,5 +1,6 @@
 #include"ReadBMPFile.h"
-
+#include<stdlib.h>
+#include<iostream>
 using namespace std;
 
 bool ReadBMPFile::ReadBMPHead()
@@ -57,21 +58,22 @@ bool ReadBMPFile::ReadBMPHead()
 
 	fseek(f, head.filehead.bfOffBits, 0);
 
-	R = new int*[height];
-	G = new int*[height];
-	B = new int*[height];
-	for (int i = 0; i < height; i++) {
-		R[i] = new int[width];
-		G[i] = new int[width];
-		B[i] = new int[width];
-	}
+	R = new int[height * width];
+	G = new int[height * width];
+	B = new int[height * width];
 
 	int i, j;
-	for (i = 1; i <= height; i++) {
-		for (j = 1; j <= width; j++) {
-			fread(&B[i][j], 1, 1, f);
-			fread(&G[i][j], 1, 1, f);
-			fread(&R[i][j], 1, 1, f);
+	unsigned char r, g, b;				// used to change bmp file unsigned char typr to int type
+	for (i = 0; i < height; i++) {
+		for (j = 0; j < width; j++) {
+			fread(&b, 1, 1, f);			// read data
+			fread(&g, 1, 1, f);
+			fread(&r, 1, 1, f);
+			
+			B[i * width + j] = (int)b;	// change type and store
+			G[i * width + j] = (int)g;
+			R[i * width + j] = (int)r;
+
 		}
 		if (offset != 0) fread(&a, offset, 1, f);
 	}
@@ -80,13 +82,26 @@ bool ReadBMPFile::ReadBMPHead()
 }
 
 void ReadBMPFile::output(string after) {
+	// output BMPFileHead to compress file
 	FILE *fp;
-	if ((fp = fopen((filename+".after").c_str(), "wb")) == NULL) {
+	if ((fp = fopen((filename + "." + after).c_str(), "wb")) == NULL) {
 		printf("Write Compress ERROR!\n");
 		exit(0);
 	}
 	unsigned short bfType=0x4d42;
-	fwrite(&bfType, 2, 1, fp);
+	fwrite(&bfType, 2, 1, fp);			// bfType is bot belong to BMPFileHead
 	fwrite(&head.filehead, sizeof(FileHead), 1, fp);
 	fwrite(&head.infohead, sizeof(InfoHead), 1, fp);
+
+	// output BMPFileHead to decompress file
+	FILE *ffp;
+	if ((ffp = fopen((filename + "." + after + ".bmp").c_str(), "wb")) == NULL) {
+		printf("Write Decompress ERROR!\n");
+		exit(0);
+	}
+	fwrite(&bfType, 2, 1, ffp);			// bfType is bot belong to BMPFileHead
+	fwrite(&head.filehead, sizeof(FileHead), 1, ffp);
+	fwrite(&head.infohead, sizeof(InfoHead), 1, ffp);
+
+	cout << "Successfully generate compress & decompress file" << endl;
 }
