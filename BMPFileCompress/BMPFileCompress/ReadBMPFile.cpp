@@ -78,6 +78,11 @@ bool ReadBMPFile::ReadBMPHead()
 		if (offset != 0) fread(&a, offset, 1, f);
 	}
 
+	cout << "TEST:::::in readfile" << endl;
+	for (int i = 0; i < 20; i++) {
+		cout << R[i] << " " << G[i] << " " << B[i] << endl;
+	}
+
 	return true;
 }
 

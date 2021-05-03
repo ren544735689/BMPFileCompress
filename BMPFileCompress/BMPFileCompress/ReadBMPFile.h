@@ -11,7 +11,7 @@
 using namespace std;
 
 typedef struct {
-	//unsigned int	bfType;		//type of file
+	//unsigned short bfType;		//type of file
 	unsigned long	bfSize;		//size of file
 	unsigned short bfReserved1;
 	unsigned short	bfReserved2;

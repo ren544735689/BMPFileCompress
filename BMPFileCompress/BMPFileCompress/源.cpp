@@ -4,21 +4,25 @@ using namespace std;
 
 int main()
 {
-	//cout << sizeof(BMPFileHead);
-	//cout << sizeof(unsigned int);
+	/*cout << sizeof(unsigned short) << endl;
+	cout << sizeof(long) << endl;
+	cout << sizeof(unsigned long) << endl;
+	cout << sizeof(FileHead) << endl;
+	cout << sizeof(InfoHead) << endl;
+	cout << sizeof(BMPFileHead) << endl;*/
 	
 	ReadBMPFile bmpfile("bmp.bmp", "E:");
-	bmpfile.output("RLC");
-
-	/*BMPInfo test = bmpfile.getinfo();
-	for (int i = 0; i < 10; i++) {
-		cout << (int)test.R[i] << endl;
-	}*/
-	
+	bmpfile.output("RLC");	
 
 	RLCCompress rlccompress(bmpfile.getinfo());
 	rlccompress.compress();
 	rlccompress.decompress();
+
+	/*BMPInfo test = bmpfile.getinfo();
+for (int i = 0; i < 10; i++) {
+	cout << (int)test.R[i] << endl;
+}*/
+
 
 	//float ta[2][3] = { {1.0,2.0,3.0},{4.0,5.0,6.0} };
 	//float **p = new float *[2];//¿ª±ÙÐÐ¿Õ¼ä

@@ -17,6 +17,12 @@ void RLCCompress::compress()
 
 	unsigned char iitem, rrecnum;
 
+	//cout << "TEST:::::in lossless before compress" << endl;
+	//for (int i = 0; i < 20; i++) {
+	//	cout << info.R[i] << " " << info.G[i] << " " << info.B[i] << endl;
+	//}
+
+
 	cout << "R:" << endl;
 	for (int i = 0; i < info.height; i++) {
 		now = 0;
@@ -116,14 +122,14 @@ void RLCCompress::decompress()
 		printf("Sorry, cannot find output-original(*.RLC.bmp) file!\n");
 		exit(0);
 	}
-	fseek(ofp, 56, SEEK_SET);			// 56 is the total BMP head size
+	fseek(ofp, 54, SEEK_SET);			// 56 is the total BMP head size
 
 	FILE *ifp = fopen((info.filename + ".RLC").c_str(), "r");
 	if (ofp == NULL) {
 		printf("Sorry, cannot find after-compression(*.RLC) file!\n");
 		exit(0);
 	}
-	fseek(ifp, 56, SEEK_SET);			// 56 is the total BMP head size
+	fseek(ifp, 54, SEEK_SET);			// 56 is the total BMP head size
 
 	int color;							// the new color
 	int nowcolor;						// the previous color
@@ -278,21 +284,22 @@ void RLCCompress::decompress()
 		}
 	}
 
+	//cout << "TEST:::::in lossless after compress" << endl;
+	//for (int i = 0; i < 20; i++) {
+	//	cout << R[i] << " " << G[i] << " " << B[i] << endl;
+	//}
+
 	int a = 0;
 	unsigned char r, g, b;
 	for (int i = 0; i < info.height; i++) {
 		for (int j = 0; j < info.width; j++) {
-			r = R[i*info.height + j];
-			g = G[i*info.height + j];
-			b = B[i*info.height + j];
+			r = info.R[i*info.height + j];
+			g = info.G[i*info.height + j];
+			b = info.B[i*info.height + j];
 
 			//y = (double)colormap[i][j].Blue*0.114 + (double)colormap[i][j].Green*0.587 + (double)colormap[i][j].Red*0.299;
 			//u = (double)colormap[i][j].Blue*0.437 + (double)colormap[i][j].Green*(-0.289) + (double)colormap[i][j].Red*(-0.148);
 			//v = (double)colormap[i][j].Blue*(-0.100) + (double)colormap[i][j].Green*(-0.515) + (double)colormap[i][j].Red*0.615;
-
-			if ((int)b != 205) {
-				cout << "ok!" << endl;
-			}
 
 			fwrite(&b, 1, 1, ofp);
 			fwrite(&g, 1, 1, ofp);
