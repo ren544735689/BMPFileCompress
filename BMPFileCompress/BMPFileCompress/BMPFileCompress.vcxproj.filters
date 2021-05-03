@@ -35,5 +35,8 @@
     <ClCompile Include="LosslessCompress.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
+    <ClCompile Include="UI.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

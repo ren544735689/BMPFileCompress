@@ -4,7 +4,7 @@
 #define _READBMPFILE_
 
 #define MAXHEIGHT 2000
-#define MAXWIDTH 1800
+#define MAXWIDTH 2300
 
 #include<string>
 #include<iostream>

@@ -293,9 +293,13 @@ void RLCCompress::decompress()
 	unsigned char r, g, b;
 	for (int i = 0; i < info.height; i++) {
 		for (int j = 0; j < info.width; j++) {
-			r = info.R[i*info.height + j];
-			g = info.G[i*info.height + j];
-			b = info.B[i*info.height + j];
+			r = R[i*info.width + j];
+			g = G[i*info.width + j];
+			b = B[i*info.width + j];
+
+			/*r = info.R[i*info.width + j];
+			g = info.G[i*info.width + j];
+			b = info.B[i*info.width + j];*/
 
 			//y = (double)colormap[i][j].Blue*0.114 + (double)colormap[i][j].Green*0.587 + (double)colormap[i][j].Red*0.299;
 			//u = (double)colormap[i][j].Blue*0.437 + (double)colormap[i][j].Green*(-0.289) + (double)colormap[i][j].Red*(-0.148);

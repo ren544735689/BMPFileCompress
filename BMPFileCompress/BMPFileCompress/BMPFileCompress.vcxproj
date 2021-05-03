@@ -130,6 +130,7 @@
   <ItemGroup>
     <ClCompile Include="LosslessCompress.cpp" />
     <ClCompile Include="ReadBMPFile.cpp" />
+    <ClCompile Include="UI.cpp" />
     <ClCompile Include="源.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
