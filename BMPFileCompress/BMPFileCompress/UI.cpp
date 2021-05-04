@@ -1,4 +1,5 @@
-#include"LosslessCompress.h"
+#include"RLCCompress.h"
+#include"HuffmanCompress.h"
 #include<iostream>
 
 using namespace std;
@@ -18,12 +19,18 @@ int main()
 	while (cmd != "exit") {
 		if (cmd == "RLCcompression") {
 			RLC();
+			system("pause");
+			break;
 		}
 		else if (cmd == "HuffmanCompression") {
 			Huff();
+			system("pause");
+			break;
 		}
 		else if (cmd == "JPEG-Form compression") {
 
+			system("pause");
+			break;
 		}
 		else if (cmd == "clear") {
 			system("cls");
@@ -44,14 +51,15 @@ void RLC()
 	cin >> location;
 	cout << "Please input the BMP file name(not NULL):";
 	cin >> name;
-	
-	string outputlocation;
-	cout << "Please input the output file location:";
-	cin >> outputlocation;
-	cout << "OK!" << endl;
 
 	cout << "Compression .bmp file...";
-	ReadBMPFile file(location, name);
+	ReadBMPFile file;
+	if (location != "NULL") {
+		file = ReadBMPFile(location, name);
+	}
+	else {
+		file = ReadBMPFile(name);
+	}
 	file.output("RLC");
 	RLCCompress rlc(file.getinfo());
 	rlc.compress();
@@ -62,6 +70,40 @@ void RLC()
 	cout << "Decompression finished!" << endl;
 
 	cout << "Successfully compress and decompress the BMP File!" << endl;
+}
+
+void Huff()
+{
+	string location, name;
+	cout << "Please input the BMP file location(NULL means current location):";
+	cin >> location;
+	cout << "Please input the BMP file name(not NULL):";
+	cin >> name;
+	cout << "OK!" << endl;
+
+	cout << "Compression .bmp file...";
+	ReadBMPFile file;
+	if (location != "NULL") {
+		file = ReadBMPFile(location, name);
+	}
+	else {
+		file = ReadBMPFile(name);
+	}
+	//file.output("RLC");
+	HuffmanCompress huf(file.getinfo());
+	huf.compress();
+	cout << "Compression finished!";
+
+	cout << "Decompression huffman file...";
+	huf.decompress();
+	cout << "Decompression finished!" << endl;
+
+	cout << "Successfully compress and decompress the BMP File!" << endl;
+}
+
+void JEPG()
+{
+
 }
 
 void UI()

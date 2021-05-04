@@ -18,7 +18,7 @@ bool ReadBMPFile::ReadBMPHead()
 		}
 	}
 	else {											// read BMP Head from current location
-		if ((f = fopen("filename", "rb")) == NULL) {
+		if ((f = fopen(filename.c_str(), "rb")) == NULL) {
 			cout << "BMP not found in current location!" << endl;
 			return false;
 		}

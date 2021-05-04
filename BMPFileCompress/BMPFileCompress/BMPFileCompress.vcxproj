@@ -124,14 +124,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Compress.h" />
-    <ClInclude Include="LosslessCompress.h" />
+    <ClInclude Include="HuffmanCompress.h" />
+    <ClInclude Include="HuffmanTree.h" />
+    <ClInclude Include="RLCCompress.h" />
     <ClInclude Include="ReadBMPFile.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="LosslessCompress.cpp" />
+    <ClCompile Include="HuffmanCompress.cpp" />
+    <ClCompile Include="HuffmanTree.cpp" />
+    <ClCompile Include="RLCCompress.cpp" />
     <ClCompile Include="ReadBMPFile.cpp" />
     <ClCompile Include="UI.cpp" />
-    <ClCompile Include="源.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

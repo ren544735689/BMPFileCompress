@@ -18,10 +18,16 @@
     <ClInclude Include="ReadBMPFile.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="LosslessCompress.h">
+    <ClInclude Include="Compress.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Compress.h">
+    <ClInclude Include="RLCCompress.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="HuffmanCompress.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="HuffmanTree.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -29,13 +35,16 @@
     <ClCompile Include="ReadBMPFile.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="源.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="LosslessCompress.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="UI.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="RLCCompress.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="HuffmanCompress.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="HuffmanTree.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
