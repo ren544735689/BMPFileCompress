@@ -9,22 +9,23 @@ using namespace std;
 void HuffmanCompress::compress()
 {
 	char ch;
-	vector<char> table;
+	vector<unsigned char> table;
 	vector<int> weight;
-	vector<char>::iterator i = table.begin();
-	vector<int>::iterator j = weight.begin();
+	vector<unsigned char>::iterator i;
+	vector<int>::iterator j;
 
 	bool flag = false;
-	FILE *inf = fopen(info.filename.c_str(), "rb");
+	ifstream inf;
+	inf.open(info.filename);
 
-	while (!feof(inf)) {
-		fread(&ch, 1, 1, inf);
+	while (!inf.eof()) {
+		inf.get(ch);
 		flag = false;
 		
-		for ( ; i !=table.end(); i++,j++) {
+		for (i = table.begin(), j = weight.begin(); i !=table.end(); i++,j++) {
 			if (*i == ch) {
 				flag = true;
-				(*j)+=1;
+				(*j)=(*j)+1;
 				break;
 			}
 		}
@@ -43,28 +44,17 @@ void HuffmanCompress::compress()
 		outputchtable << *i;
 	}
 	outputchtable << endl;
-	for (j = weight.begin(); j != weight.end(); i++) {
+	for (j = weight.begin(); j != weight.end(); j++) {
 		outputchtable << *j << " ";
+		//cout << "test::*j  " << *j << endl;
 	}
+	outputchtable << endl;
 
-	char* huffmantree = nullptr;
-	strcpy(huffmantree, "HuffmanTree.txt");
-	char* huffmantable = nullptr;
-	strcpy(huffmantable, "HuffmanTable.txt");
-	char* resfile = nullptr;
-	strcpy(huffmantable, info.filename.c_str());
-	char* desfile = nullptr;
-	strcpy(desfile, "HuffmanCompression.HUF");
-
-	HuffmanTree = initialHuffmanTree(&chSetSize, huffmantree, huffmantable);
-	encode(HuffmanTree, chSetSize, resfile, desfile);
+	HuffmanTree = initialHuffmanTree(&chSetSize, "HuffmanTree.txt", "HuffmanTable.txt");
+	encode(HuffmanTree, chSetSize, info.filename, "HuffmanCompression.HUF");
 }
 
 void HuffmanCompress::decompress()
 {
-	char* resfile=nullptr;
-	strcpy(resfile, "HuffmanCompression.HUF");
-	char* desfile=nullptr;
-	strcpy(desfile, "HuffmanDecompression.HUF");
-	decode(HuffmanTree, 2 * chSetSize - 1, resfile, desfile);
+	decode(HuffmanTree, 2 * chSetSize - 1, "HuffmanCompression.HUF", "HuffmanDecompression.bmp");
 }

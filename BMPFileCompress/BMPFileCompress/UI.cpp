@@ -63,9 +63,9 @@ void RLC()
 	file.output("RLC");
 	RLCCompress rlc(file.getinfo());
 	rlc.compress();
-	cout << "Compression finished!";
+	cout << "Compression finished!"<<endl;
 
-	cout << "Decompression .bmp.RLC file...";
+	cout << "Decompression .bmp.RLC file..." << endl;
 	rlc.decompress();
 	cout << "Decompression finished!" << endl;
 
@@ -81,7 +81,7 @@ void Huff()
 	cin >> name;
 	cout << "OK!" << endl;
 
-	cout << "Compression .bmp file...";
+	cout << "Compression .bmp file..." << endl;
 	ReadBMPFile file;
 	if (location != "NULL") {
 		file = ReadBMPFile(location, name);
@@ -92,9 +92,9 @@ void Huff()
 	//file.output("RLC");
 	HuffmanCompress huf(file.getinfo());
 	huf.compress();
-	cout << "Compression finished!";
+	cout << "Compression finished!"<<endl;
 
-	cout << "Decompression huffman file...";
+	cout << "Decompression huffman file..." << endl;
 	huf.decompress();
 	cout << "Decompression finished!" << endl;
 
@@ -126,3 +126,10 @@ void UI()
 	cout << "========================BMP File Compression=========================" << endl;
 	cout << "\nPlease input your command here:" << endl;
 }
+
+
+/*
+HuffmanCompression
+NULL
+bmp.bmp
+*/

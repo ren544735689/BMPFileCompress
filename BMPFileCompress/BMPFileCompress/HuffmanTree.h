@@ -3,14 +3,16 @@
 #ifndef _HUFFMANTREE
 #define _HUFFMANTREE
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <conio.h>
+#include<iostream>
+#include<stdlib.h>
+#include<conio.h>
+#include<string>
+#include<fstream>
+using namespace std;
 
 #define HUFFMAN_TREE_H
 #define MAX_FILE_NAME_LEN 20    //Max length of file's name in arguments of main function.
 
-typedef enum { FALSE, TRUE } Bool;    //boolean type
 //struct to describe huffmanTreeNode
 typedef struct
 {
@@ -22,13 +24,10 @@ typedef struct
 	unsigned int size;    //all size of this node(include itself and its child)
 } HuffmanTreeNode;
 
-HuffmanTreeNode* initialHuffmanTree(int *size, char *huffmanTreeFile, char *characterSetFile);
+HuffmanTreeNode* initialHuffmanTree(int *size, string huffmanTreeFile, string characterSetFile);
 void select(HuffmanTreeNode *huffmanArray, int boundary, int *minWeightIndex,
 	int*secondMinWeightIndex);
-Bool encode(HuffmanTreeNode *huffmanArray, int size, char *fileRes, char *fileDes);
-Bool decode(HuffmanTreeNode *huffmanArray, int size, char *fileRes, char *fileDes);
-Bool printCode(char *fileRes, char *fileDes);
-Bool printHuffmanTree(HuffmanTreeNode *huffmanArray, int size, char *fileDes);
-void printTree(HuffmanTreeNode *huffmanArray, int i, int size, int depth, FILE *fp);
+bool encode(HuffmanTreeNode *huffmanArray, int size, string fileRes, string ileDes);
+bool decode(HuffmanTreeNode *huffmanArray, int size, string fileRes, string fileDes);
 
 #endif // !_HUFFMANTREE

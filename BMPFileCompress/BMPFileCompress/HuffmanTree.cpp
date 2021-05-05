@@ -1,10 +1,8 @@
 #pragma warning(disable:4996)
-#include <stdio.h>
-#include <stdlib.h>
-#include <conio.h>
-#include "huffmanTree.h"
 
-HuffmanTreeNode* initialHuffmanTree(int *size, char *huffmanTreeFile, char *characterSetFile)
+#include"huffmanTree.h"
+
+HuffmanTreeNode* initialHuffmanTree(int *size, string huffmanTreeFile, string characterSetFile)
 {
 	int characterSetSize = 0;
 	int huffmanArraySize;
@@ -15,24 +13,16 @@ HuffmanTreeNode* initialHuffmanTree(int *size, char *huffmanTreeFile, char *char
 	int i;      //counter
 	HuffmanTreeNode *p;
 	HuffmanTreeNode *huffmanArray;  //imitate array with changeable length
-	FILE *fp;
+	ifstream inf;
+	inf.open(characterSetFile);
 
-	if ((fp = fopen(characterSetFile, "rb")) == NULL)
+	if (!inf)
 	{
-		fprintf(stderr, "\nError caused by opening characterSetFile!"
-			"Press any key to exit...\n");
-		getch();
-		exit(EXIT_FAILURE);
+		cout << "\nError caused by opening characterSetFile!" << endl;
+		return nullptr;
 	}
-	rewind(fp);
 	//read characterSetSize from characterSetFile
-	if (fscanf(fp, "%d", &characterSetSize) != 1)
-	{
-		fprintf(stderr, "\nError caused by reading characterSetSize in characterSetFile!"
-			"Press Any key to exit...\n");
-		getch();
-		exit(EXIT_FAILURE);
-	}
+	inf >> characterSetSize;
 	*size = characterSetSize;
 	huffmanArraySize = 2 * characterSetSize - 1;
 	huffmanArray = (HuffmanTreeNode *)malloc((huffmanArraySize + 1)
@@ -41,44 +31,29 @@ HuffmanTreeNode* initialHuffmanTree(int *size, char *huffmanTreeFile, char *char
 	{
 		if (huffmanArray == NULL)
 		{
-			fprintf(stderr, "\nNo memory available!\n");
-			getch();
-			return huffmanArray;
+			cout << "No memory available!\n" << endl;
+			return nullptr;
 		}
 		if ((characterSet = (char *)malloc(characterSetSize * sizeof(char))) == NULL)
 		{
-			fprintf(stderr, "\nNo memory available!\n");
-			getch();
-			return huffmanArray;
+			cout << "No memory available!\n" << endl;
+			return nullptr;
 		}
 		if ((characterSetWeight = (int *)malloc(characterSetSize * sizeof(int))) == NULL)
 		{
-			fprintf(stderr, "\nNo memory available!\n");
-			getch();
-			return huffmanArray;
+			cout << "No memory available!\n" << endl;
+			return nullptr;
 		}
 		for (i = 0; i < characterSetSize; i++)
 		{
-			if (fscanf(fp, "%c", &characterSet[i]) != 1)
-			{
-				fprintf(stderr, "\nError caused by reading characterSet!"
-					"Press any key to return...");
-				getch();
-				return huffmanArray;
-			}
-			if (characterSet[i] == '\r')
-				i--;
+			inf.get(characterSet[i]);
+			//cout << "test::" << characterSet[i] << endl;;
 		}
 
-		for (i = 0; i < characterSetSize; i++)
-			if (fscanf(fp, "%u", &characterSetWeight[i]) != 1)
-			{
-				fprintf(stderr, "\nError caused by reading characterSetWeight!"
-					"Press any key to return...");
-				getch();
-				return huffmanArray;
-			}
-		fclose(fp);
+		for (i = 0; i < characterSetSize; i++) {
+			inf >> characterSetWeight[i];
+			//cout << "test::" << characterSetWeight[i] << endl;;
+		}	
 
 		//initialize huffmanArray's primary character node
 		for (p = huffmanArray + 1, i = 1; i <= characterSetSize; ++i, ++p)
@@ -114,37 +89,22 @@ HuffmanTreeNode* initialHuffmanTree(int *size, char *huffmanTreeFile, char *char
 			huffmanArray[i].weight = huffmanArray[min1].weight + huffmanArray[min2].weight;
 		}
 
-		if ((fp = fopen(huffmanTreeFile, "wb")) == NULL)
+		ofstream outf;
+		outf.open(huffmanTreeFile);
+		if (!outf)
 		{
-			fprintf(stderr, "\nError caused by opening huffmanTreeFile!"
-				"Press any key to return...\n");
-			getch();
-			return huffmanArray;
+			cout << "Error caused by opening huffmanTreeFile!" << endl;
+			return nullptr;
 		}
-		rewind(fp);
 		//print huffmanArray's size for using of reading huffmanTreeFile
-		fprintf(fp, "%d\r\n", huffmanArraySize);
+		outf << huffmanArraySize << endl;
 		//print all node's information
 		for (i = 1; i <= huffmanArraySize; i++)
-			fprintf(fp, "%d\t%d\t%c\t%u\t%u\t%u\t%u\r\n", i, huffmanArray[i].weight, huffmanArray[i].value,
-				huffmanArray[i].parent, huffmanArray[i].lchild, huffmanArray[i].rchild, huffmanArray[i].size);
-		fflush(fp);
-		fclose(fp);
+			outf << i << "\t" << huffmanArray[i].weight<<"\t"<< huffmanArray[i].value << "\t" << huffmanArray[i].parent << "\t" << huffmanArray[i].lchild << "\t" << huffmanArray[i].rchild << "\t" << huffmanArray[i].size << "\n";
 	}
 	return huffmanArray;
 }
 
-/*Name: select
- *Interface:
- *    Arguments:
- *        HuffmanTreeNode *huffmanArray
- *        int boundary             : select from array's item from 1 to boundary
- *        int *minWeightIndex      :
- *        int*secondMinWeightIndex
- *    No returns
- *Use: travel array's part to find array's items with min weight and secondMin weight
- *Else:
- */
 void select(HuffmanTreeNode *huffmanArray, int boundary, int *minWeightIndex,
 	int*secondMinWeightIndex)
 {
@@ -207,25 +167,11 @@ void select(HuffmanTreeNode *huffmanArray, int boundary, int *minWeightIndex,
 	}
 }
 
-/*Name: encode
- *Interface:
- *    Arguments:
- *        HuffmanTreeNode *huffmanArray :
- *        int size                      : characterSet's size
- *        char *fileRes                 : file to encode
- *        char *fileDes                 : file encoded
- *    Return : if encode mission completed successfully
- *Use: Based on huffmanArray, encode from fileRes to fileDes
- *     First, find the encoding character's index in huffmanArray,
- *     Second, travel from child to parent and save '0' or '1' to string
- *     by reverse order, Finally, print the string to fileDes.
- *Else: if error occurs when opening file, then return FALSE
- *      if the character is not in characterSet then exit(EXIT_FAILURE);
- */
-Bool encode(HuffmanTreeNode *huffmanArray, int size, char *fileRes, char *fileDes)
+bool encode(HuffmanTreeNode *huffmanArray, int size, string fileRes, string fileDes)
 {
-	FILE *fpIn;   //file stream for input
-	FILE *fpOut;  //file stream for output
+	//ifstream inf;	//file stream for input
+	FILE* inf;
+	ofstream outf;	//file stream for output
 	char c;       //character has read
 	char temp[100000];  //temp string to save current character's huffman code
 	int start;    //current character's huffman code's start position in string
@@ -235,45 +181,38 @@ Bool encode(HuffmanTreeNode *huffmanArray, int size, char *fileRes, char *fileDe
 
 	if (huffmanArray == NULL)
 	{
-		fprintf(stderr, "\nhuffmanArray is NULL!"
-			"Press any key to return...\n");
+		cout << "huffmanArray is NULL!" << endl;
 		getch();
-		return FALSE;
+		return false;
 	}
-	if ((fpIn = fopen(fileRes, "rb")) == NULL)
+	inf=fopen(fileRes.c_str(),"r");
+	if (inf==NULL)
 	{
-		fprintf(stderr, "\nError caused by opening encodeFileRes!"
-			"Press any key to return...\n");
-		getch();
-		return FALSE;
+		cout << "Error caused by opening encodeFileRes!" << endl;
+		return false;
 	}
-	if ((fpOut = fopen(fileDes, "wb")) == NULL)
+	outf.open(fileDes);
+	if (!outf)
 	{
-		fprintf(stderr, "\nError caused by opening encodeFileDes!"
-			"Press any key to return...\n");
-		getch();
-		return FALSE;
+		cout << "Error caused by opening encodeFileRes!" << endl;
+		return false;
 	}
-	rewind(fpIn);
-	rewind(fpOut);
 	//when error occurs or file is over, loop exits
-	while (!feof(fpIn) && !ferror(fpOut) && !ferror(fpOut))
+	while (!feof(inf))
 	{
 		int i;
-		c = fgetc(fpIn);    //read character from file
-		if (c == '\r')
-			continue;
+		fread(&c, 1, 1, inf);
+		//cout << "test::c " << c << endl;
 		//find current character's index
+
 		for (i = 1; i <= size; i++)
 			if (huffmanArray[i].value == c)
 				break;
 		//if the character is not in characterSet
-		if (i > size && !feof(fpIn))
+		if (i > size && !feof(inf))
 		{
-			fprintf(stderr, "\nError occurs because of invalid character %c!"
-				"Perss Any key to exit...", c);
-			getch();
-			exit(EXIT_FAILURE);
+			cout << "Error occurs because of invalid character!" << c << endl;
+			return false;
 		}
 		index = i;
 		temp[size - 1] = '\0';
@@ -287,29 +226,14 @@ Bool encode(HuffmanTreeNode *huffmanArray, int size, char *fileRes, char *fileDe
 			else
 				temp[--start] = '1';
 		}
-		fwrite(&temp[start], sizeof(char), size - start - 1, fpOut);
-		//      or fprintf(fpOut, "%s", &temp[start]);
+		for (int i = start; i < size - 1;i++) {
+			outf << temp[i];
+		}
 	}
-	fclose(fpIn);
-	fflush(fpOut);
-	fclose(fpOut);
-	return TRUE;
+	return true;
 }
 
-/*Name: decode
- *Interface:
- *    Arguments:
- *         HuffmanTreeNode *huffmanArray
- *         int size      : huffmanArray's size
- *         char *fileRes : file to decode
- *         char *fileDes : file decoded
- *    Return : if decode mission completed successfully
- *Use: Based on huffmanArray, decode fileRed to fileDes
- *     Each time read a character from fileRes, if equals '0' then goes to cursor's lchild,
- *     if equals '1' then goes to cursor's rchild until cursor goes to leafs.
- *Else: if error occurs when opening file, then return FALSE
- */
-Bool decode(HuffmanTreeNode *huffmanArray, int size, char *fileRes, char *fileDes)
+bool decode(HuffmanTreeNode *huffmanArray, int size, string fileRes, string fileDes)
 {
 	FILE *fpIn;
 	FILE *fpOut;
@@ -321,22 +245,22 @@ Bool decode(HuffmanTreeNode *huffmanArray, int size, char *fileRes, char *fileDe
 		fprintf(stderr, "\nhuffmanArray is NULL!"
 			"Press any key to return...\n");
 		getch();
-		return FALSE;
+		return false;
 	}
 
-	if ((fpIn = fopen(fileRes, "rb")) == NULL)
+	if ((fpIn = fopen(fileRes.c_str(), "rb")) == NULL)
 	{
 		fprintf(stderr, "\nError caused by opening encodeFileDes!"
 			"Press any key to return...\n");
 		getch();
-		return FALSE;
+		return false;
 	}
-	if ((fpOut = fopen(fileDes, "wb")) == NULL)
+	if ((fpOut = fopen(fileDes.c_str(), "wb")) == NULL)
 	{
 		fprintf(stderr, "\nError caused by opening decodeFileDes!"
 			"Press any key to return...\n");
 		getch();
-		return FALSE;
+		return false;
 	}
 	rewind(fpIn);
 	rewind(fpOut);
@@ -362,126 +286,5 @@ Bool decode(HuffmanTreeNode *huffmanArray, int size, char *fileRes, char *fileDe
 	fflush(fpOut);
 	fclose(fpIn);
 	fclose(fpOut);
-	return TRUE;
-}
-
-/*Name: printCode
- *Interface:
- *    Arguments:
- *        char *fileRes
- *        char *fileDes
- *    Return : if the print mission completed successfully
- *Use: Open the resource file and print it to screen and destination file
- *     by formating.
- *Else:
- */
-Bool printCode(char *fileRes, char *fileDes)
-{
-	FILE *fpIn;
-	FILE *fpOut;
-	char c;
-
-	if ((fpIn = fopen(fileRes, "rb")) == NULL)
-	{
-		fprintf(stderr, "\nError caused by opening encodeFileDes!"
-			"Press any key to return...\n");
-		getch();
-		return FALSE;
-	}
-	if ((fpOut = fopen(fileDes, "wb")) == NULL)
-	{
-		fprintf(stderr, "\nError caused by opening printFileDes!"
-			"Press any key to return...\n");
-		getch();
-		return FALSE;
-	}
-	rewind(fpIn);
-	rewind(fpOut);
-	while (!feof(fpIn) && !ferror(fpIn) && !ferror(fpOut))
-	{
-		//format
-		for (int i = 0; i < 50; i++)
-		{
-			c = fgetc(fpIn);
-			printf("%c", c);
-			fprintf(fpOut, "%c", c);
-		}
-		printf("\n");
-		fprintf(fpOut, "\r\n");
-	}
-
-	fflush(fpOut);
-	fclose(fpIn);
-	fclose(fpOut);
-	printf("\nPress any key to return...");
-	getch();
-}
-
-/*Name: printHuffmanTree
- *Interface:
- *    Argument:
- *        HuffmanTreeNode *huffmanArray
- *        int size
- *        char *fileDes
- *    Return: if the print mission completed successfully.
- *Use: print the tree and save data to file.
- *Else:
- */
-Bool printHuffmanTree(HuffmanTreeNode *huffmanArray, int size, char *fileDes)
-{
-	FILE *fp;
-
-	if ((fp = fopen(fileDes, "wb")) == NULL)
-	{
-		fprintf(stderr, "\nError caused by opening printHuffmanTreeDes!"
-			"Press any key to return...\n");
-		getch();
-		return FALSE;
-	}
-	printTree(huffmanArray, size, size, 0, fp);
-	printf("\nPress any key to return...");
-	getch();
-	fflush(fp);
-	fclose(fp);
-}
-
-/*Name: printTree
- *Interface:
- *    Arguments:
- *        HuffmanTreeNode *huffmanArray
- *        int i
- *        int size
- *        int depth
- *        FILE *fp
- *    No return
- *Use: travel and print the tree recursively and print data to file
- *Else:
- */
-void printTree(HuffmanTreeNode *huffmanArray, int i, int size, int depth, FILE *fp)
-{
-	//use argument "depth" to format when printing.
-	printf("\n");
-	fprintf(fp, "\r\n");
-	for (int j = 0; j < depth; j++)
-	{
-		printf("    ");
-		fprintf(fp, "    ");
-	}
-	//if it goes to leaf then print the value
-	//else print the weight
-	if (i >= 1 && i <= ((size + 1) / 2))
-	{
-		printf("%c", huffmanArray[i].value);
-		fprintf(fp, "%c", huffmanArray[i].value);
-	}
-	else
-	{
-		printf("%u", huffmanArray[i].weight);
-		fprintf(fp, "%u", huffmanArray[i].weight);
-	}
-	//if goes to leaf then return
-	if (huffmanArray[i].lchild == 0 && huffmanArray[i].rchild == 0)
-		return;
-	printTree(huffmanArray, huffmanArray[i].lchild, size, depth + 1, fp);
-	printTree(huffmanArray, huffmanArray[i].rchild, size, depth + 1, fp);
+	return true;
 }
