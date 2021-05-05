@@ -7,7 +7,7 @@ using namespace std;
 
 class HuffmanCompress :public Compress {
 private:
-	HuffmanTreeNode* HuffmanTree;
+	HuffmanTNode* HuffmanTree;
 	int chSetSize;
 public:
 	// ctor

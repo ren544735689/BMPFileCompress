@@ -2,71 +2,70 @@
 
 #include"huffmanTree.h"
 
-HuffmanTreeNode* initialHuffmanTree(int *size, string huffmanTreeFile, string characterSetFile)
+HuffmanTNode* initial(int *size, string huffmanTreeFile, string SetFile)
 {
-	int characterSetSize = 0;
-	int huffmanArraySize;
-	char *characterSet;   //imitate array with changeable length
-	int *characterSetWeight;  //imitate array with changeable length
-	int min1;   //the index with min weight
-	int min2;   //the index with secongMin weight
-	int i;      //counter
-	HuffmanTreeNode *p;
-	HuffmanTreeNode *huffmanArray;  //imitate array with changeable length
+	int setsize = 0;
+	int treesize;
+	char *set;					//array with changeable length
+	int *chweight;				//array with changeable length
+	int min1,min2;				//the index with min weight
+	int i;						//counter
+	HuffmanTNode *p;
+	HuffmanTNode *tree;			//array with changeable length
 	ifstream inf;
-	inf.open(characterSetFile);
+	inf.open(SetFile);
 
 	if (!inf)
 	{
-		cout << "\nError caused by opening characterSetFile!" << endl;
+		cout << "ERROR! opening SetFile!" << endl;
 		return nullptr;
 	}
-	//read characterSetSize from characterSetFile
-	inf >> characterSetSize;
-	*size = characterSetSize;
-	huffmanArraySize = 2 * characterSetSize - 1;
-	huffmanArray = (HuffmanTreeNode *)malloc((huffmanArraySize + 1)
-		* sizeof(HuffmanTreeNode));
-	if (characterSetSize > 0)
+	//read setsize from SetFile
+	inf >> setsize;
+	*size = setsize;
+	treesize = 2 * setsize - 1;
+	tree = (HuffmanTNode *)malloc((treesize + 1)
+		* sizeof(HuffmanTNode));
+	if (setsize > 0)
 	{
-		if (huffmanArray == NULL)
+		if (tree == NULL)
 		{
 			cout << "No memory available!\n" << endl;
 			return nullptr;
 		}
-		if ((characterSet = (char *)malloc(characterSetSize * sizeof(char))) == NULL)
+		if ((set = (char *)malloc(setsize * sizeof(char))) == NULL)
 		{
 			cout << "No memory available!\n" << endl;
 			return nullptr;
 		}
-		if ((characterSetWeight = (int *)malloc(characterSetSize * sizeof(int))) == NULL)
+		if ((chweight = (int *)malloc(setsize * sizeof(int))) == NULL)
 		{
 			cout << "No memory available!\n" << endl;
 			return nullptr;
 		}
-		for (i = 0; i < characterSetSize; i++)
+		for (i = 0; i < setsize; i++)
 		{
-			inf.get(characterSet[i]);
-			//cout << "test::" << characterSet[i] << endl;;
+			inf.get(set[i]);
+			//cout << "test::" << set[i] << endl;;
 		}
 
-		for (i = 0; i < characterSetSize; i++) {
-			inf >> characterSetWeight[i];
-			//cout << "test::" << characterSetWeight[i] << endl;;
+		for (i = 0; i < setsize; i++) {
+			inf >> chweight[i];
+			//cout << "test::" << chweight[i] << endl;;
 		}	
 
-		//initialize huffmanArray's primary character node
-		for (p = huffmanArray + 1, i = 1; i <= characterSetSize; ++i, ++p)
+		//initialize tree's primary character node
+		for (p = tree + 1, i = 1; i <= setsize; ++i, ++p)
 		{
-			p->weight = characterSetWeight[i - 1];
-			p->value = characterSet[i - 1];
+			p->weight = chweight[i - 1];
+			p->value = set[i - 1];
 			p->parent = 0;
 			p->lchild = 0;
 			p->rchild = 0;
 			p->size = 1;  //primary size is 1
 		}
-		//initialize huffmanArray's generated node
-		for (; i <= huffmanArraySize; ++i, ++p)
+		//initialize tree's generated node
+		for (; i <= treesize; ++i, ++p)
 		{
 			p->weight = 0;    //empty
 			p->value = ' ';   //space
@@ -76,89 +75,87 @@ HuffmanTreeNode* initialHuffmanTree(int *size, string huffmanTreeFile, string ch
 			p->size = 1;
 		}
 
-		for (i = characterSetSize + 1; i <= huffmanArraySize; i++)
+		for (i = setsize + 1; i <= treesize; i++)
 		{
-			//select the min and secondMin node from huffmanArray
-			select(huffmanArray, i - 1, &min1, &min2);
+			//select the min and secondMin node from tree
+			find(tree, i - 1, &min1, &min2);
 			//generate new tree and update some information
-			huffmanArray[min1].parent = i;
-			huffmanArray[min2].parent = i;
-			huffmanArray[i].size = huffmanArray[min1].size + huffmanArray[min2].size + 1;
-			huffmanArray[i].lchild = min1;
-			huffmanArray[i].rchild = min2;
-			huffmanArray[i].weight = huffmanArray[min1].weight + huffmanArray[min2].weight;
+			tree[min1].parent = i;
+			tree[min2].parent = i;
+			tree[i].size = tree[min1].size + tree[min2].size + 1;
+			tree[i].lchild = min1;
+			tree[i].rchild = min2;
+			tree[i].weight = tree[min1].weight + tree[min2].weight;
 		}
 
 		ofstream outf;
 		outf.open(huffmanTreeFile);
 		if (!outf)
 		{
-			cout << "Error caused by opening huffmanTreeFile!" << endl;
+			cout << "ERROR! opening huffmanTreeFile!" << endl;
 			return nullptr;
 		}
-		//print huffmanArray's size for using of reading huffmanTreeFile
-		outf << huffmanArraySize << endl;
+		//print tree's size for using of reading huffmanTreeFile
+		outf << treesize << endl;
 		//print all node's information
-		for (i = 1; i <= huffmanArraySize; i++)
-			outf << i << "\t" << huffmanArray[i].weight<<"\t"<< huffmanArray[i].value << "\t" << huffmanArray[i].parent << "\t" << huffmanArray[i].lchild << "\t" << huffmanArray[i].rchild << "\t" << huffmanArray[i].size << "\n";
+		for (i = 1; i <= treesize; i++)
+			outf << i << "\t" << tree[i].weight<<"\t"<< tree[i].value << "\t" << tree[i].parent << "\t" << tree[i].lchild << "\t" << tree[i].rchild << "\t" << tree[i].size << "\n";
 	}
-	return huffmanArray;
+	return tree;
 }
 
-void select(HuffmanTreeNode *huffmanArray, int boundary, int *minWeightIndex,
-	int*secondMinWeightIndex)
+void find(HuffmanTNode *tree, int sum, int *minid, int*mminid)
 {
 	int i, j;   //counter
 
 	//find first item whose parent is 0
-	for (j = 1; j <= boundary && huffmanArray[j].parent != 0; j++)
+	for (j = 1; j <= sum && tree[j].parent != 0; j++)
 		;
-	*minWeightIndex = i = j;
+	*minid = i = j;
 	//travel the part and update indexs
-	for (i++; i <= boundary; i++)
+	for (i++; i <= sum; i++)
 		//parent must be 0
-		if (huffmanArray[i].parent == 0)
+		if (tree[i].parent == 0)
 		{
 			//compare rules: weight > size
-			if (huffmanArray[i].weight < huffmanArray[*minWeightIndex].weight)
+			if (tree[i].weight < tree[*minid].weight)
 			{
-				*secondMinWeightIndex = *minWeightIndex;
-				*minWeightIndex = i;
+				*mminid = *minid;
+				*minid = i;
 			}
 			//if weight equals, then compare their sizes
-			else if (huffmanArray[i].weight == huffmanArray[*minWeightIndex].weight)
+			else if (tree[i].weight == tree[*minid].weight)
 			{
-				if (huffmanArray[i].size < huffmanArray[*minWeightIndex].size)
+				if (tree[i].size < tree[*minid].size)
 				{
-					*secondMinWeightIndex = *minWeightIndex;
-					*minWeightIndex = i;
+					*mminid = *minid;
+					*minid = i;
 				}
-				//update *secondMinWeightIndex
+				//update *mminid
 				else
-					*secondMinWeightIndex = i;
+					*mminid = i;
 			}
-			else
-				;
+			else {}
 		}
 
-	//if *minWeightIndex not changed, then *secondMinWeightIndex is empty,
+	//if *minid not changed, then *mminid is empty,
 	//so travel from (j+1) and find the index.
-	if (j == *minWeightIndex)
+	if (j == *minid)
 	{
-		//initialize its value with endIndex because endIndex's parent is 0 and endIndex isn't *minWeightIndex
-		*secondMinWeightIndex = boundary;
-		//skip the *minWeightIndex and travel
-		for (j++; j < boundary; j++)
+		//initialize its value with endIndex because endIndex's parent is 0 and endIndex isn't *minid
+		*mminid = sum;
+		//skip the *minid and travel
+		for (j++; j < sum; j++)
 		{
-			if (huffmanArray[j].parent == 0)
+			if (tree[j].parent == 0)
 			{
 				//same compare rules.
-				if (huffmanArray[j].weight < huffmanArray[*secondMinWeightIndex].weight)
-					*secondMinWeightIndex = j;
-				else if (huffmanArray[j].weight == huffmanArray[*secondMinWeightIndex].weight)
+				if (tree[j].weight < tree[*mminid].weight)
+					*mminid = j;
+				else if (tree[j].weight == tree[*mminid].weight)
 				{
-					if (huffmanArray[j].size < huffmanArray[*secondMinWeightIndex].size)
-						*secondMinWeightIndex = j;
+					if (tree[j].size < tree[*mminid].size)
+						*mminid = j;
 				}
 				else
 					;
@@ -167,34 +164,34 @@ void select(HuffmanTreeNode *huffmanArray, int boundary, int *minWeightIndex,
 	}
 }
 
-bool encode(HuffmanTreeNode *huffmanArray, int size, string fileRes, string fileDes)
+bool encode(HuffmanTNode *tree, int size, string fileRes, string fileDes)
 {
-	//ifstream inf;	//file stream for input
+	//ifstream inf;		//file stream for input
 	FILE* inf;
-	ofstream outf;	//file stream for output
-	char c;       //character has read
-	char temp[100000];  //temp string to save current character's huffman code
-	int start;    //current character's huffman code's start position in string
+	ofstream outf;		//file stream for output
+	char c;				//character has read
+	char temp[1000];	//temp string to save current character's huffman code
+	int start;			//current character's huffman code's start position in string
 	int parent;
 	int child;
-	int index;   //current character's index in huffmanArray
+	int index;			//current character's index in tree
 
-	if (huffmanArray == NULL)
+	if (tree == NULL)
 	{
-		cout << "huffmanArray is NULL!" << endl;
+		cout << "tree is NULL!" << endl;
 		getch();
 		return false;
 	}
-	inf=fopen(fileRes.c_str(),"r");
+	inf = fopen(fileRes.c_str(),"rb");
 	if (inf==NULL)
 	{
-		cout << "Error caused by opening encodeFileRes!" << endl;
+		cout << "Error! opening encodeFileRes!" << endl;
 		return false;
 	}
 	outf.open(fileDes);
 	if (!outf)
 	{
-		cout << "Error caused by opening encodeFileRes!" << endl;
+		cout << "Error! caused by opening encodeFileRes!" << endl;
 		return false;
 	}
 	//when error occurs or file is over, loop exits
@@ -206,22 +203,21 @@ bool encode(HuffmanTreeNode *huffmanArray, int size, string fileRes, string file
 		//find current character's index
 
 		for (i = 1; i <= size; i++)
-			if (huffmanArray[i].value == c)
+			if (tree[i].value == c)
 				break;
-		//if the character is not in characterSet
+		//if the character is not in set
 		if (i > size && !feof(inf))
 		{
-			cout << "Error occurs because of invalid character!" << c << endl;
+			cout << "Error! Invalid character!" << c << endl;
 			return false;
 		}
 		index = i;
-		temp[size - 1] = '\0';
 		start = size - 1;
-		for (child = index, parent = huffmanArray[index].parent;
+		for (child = index, parent = tree[index].parent;
 			parent != 0;
-			child = parent, parent = huffmanArray[parent].parent)
+			child = parent, parent = tree[parent].parent)
 		{
-			if (huffmanArray[parent].lchild == child)
+			if (tree[parent].lchild == child)
 				temp[--start] = '0';
 			else
 				temp[--start] = '1';
@@ -233,58 +229,46 @@ bool encode(HuffmanTreeNode *huffmanArray, int size, string fileRes, string file
 	return true;
 }
 
-bool decode(HuffmanTreeNode *huffmanArray, int size, string fileRes, string fileDes)
+bool decode(HuffmanTNode *tree, int size, string fileRes, string fileDes)
 {
 	FILE *fpIn;
 	FILE *fpOut;
 	char c;
 	int cursor = size;
 
-	if (huffmanArray == NULL)
+	if (tree == NULL)
 	{
-		fprintf(stderr, "\nhuffmanArray is NULL!"
-			"Press any key to return...\n");
-		getch();
+		cout << "huffmantree is NULL!" << endl;
 		return false;
 	}
 
 	if ((fpIn = fopen(fileRes.c_str(), "rb")) == NULL)
 	{
-		fprintf(stderr, "\nError caused by opening encodeFileDes!"
-			"Press any key to return...\n");
-		getch();
+		cout << "Error! opening compression file!" << endl;
 		return false;
 	}
 	if ((fpOut = fopen(fileDes.c_str(), "wb")) == NULL)
 	{
-		fprintf(stderr, "\nError caused by opening decodeFileDes!"
-			"Press any key to return...\n");
-		getch();
+		cout << "Error! opening decompression file!" << endl;
 		return false;
 	}
-	rewind(fpIn);
-	rewind(fpOut);
 	while (!feof(fpIn) && !ferror(fpIn) && !ferror(fpOut))
 	{
 		c = fgetc(fpIn);
 		//if cursor goes to leaf
-		if (huffmanArray[cursor].lchild == 0 && huffmanArray[cursor].rchild == 0)
+		if (tree[cursor].lchild == 0 && tree[cursor].rchild == 0)
 		{
 			//print the value and move cursor to root
-			fputc(huffmanArray[cursor].value, fpOut);
+			fputc(tree[cursor].value, fpOut);
 			cursor = size;
 
 		}
 		if (c == '0')
-			cursor = huffmanArray[cursor].lchild;
+			cursor = tree[cursor].lchild;
 		else if (c == '1')
-			cursor = huffmanArray[cursor].rchild;
-		else
-			;
+			cursor = tree[cursor].rchild;
+		else {}
 	}
 
-	fflush(fpOut);
-	fclose(fpIn);
-	fclose(fpOut);
 	return true;
 }

@@ -301,10 +301,6 @@ void RLCCompress::decompress()
 			g = info.G[i*info.width + j];
 			b = info.B[i*info.width + j];
 
-			//y = (double)colormap[i][j].Blue*0.114 + (double)colormap[i][j].Green*0.587 + (double)colormap[i][j].Red*0.299;
-			//u = (double)colormap[i][j].Blue*0.437 + (double)colormap[i][j].Green*(-0.289) + (double)colormap[i][j].Red*(-0.148);
-			//v = (double)colormap[i][j].Blue*(-0.100) + (double)colormap[i][j].Green*(-0.515) + (double)colormap[i][j].Red*0.615;
-
 			fwrite(&b, 1, 1, ofp);
 			fwrite(&g, 1, 1, ofp);
 			fwrite(&r, 1, 1, ofp);

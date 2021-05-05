@@ -8,6 +8,7 @@ using namespace std;
 
 void HuffmanCompress::compress()
 {
+	unsigned char cch;
 	char ch;
 	vector<unsigned char> table;
 	vector<int> weight;
@@ -20,6 +21,7 @@ void HuffmanCompress::compress()
 
 	while (!inf.eof()) {
 		inf.get(ch);
+		cch = (unsigned char)ch;
 		flag = false;
 		
 		for (i = table.begin(), j = weight.begin(); i !=table.end(); i++,j++) {
@@ -50,7 +52,7 @@ void HuffmanCompress::compress()
 	}
 	outputchtable << endl;
 
-	HuffmanTree = initialHuffmanTree(&chSetSize, "HuffmanTree.txt", "HuffmanTable.txt");
+	HuffmanTree = initial(&chSetSize, "HuffmanTree.txt", "HuffmanTable.txt");
 	encode(HuffmanTree, chSetSize, info.filename, "HuffmanCompression.HUF");
 }
 

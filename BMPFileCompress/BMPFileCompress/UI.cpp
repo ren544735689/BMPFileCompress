@@ -1,5 +1,6 @@
 #include"RLCCompress.h"
 #include"HuffmanCompress.h"
+#include"LossyCompress.h"
 #include<iostream>
 
 using namespace std;
@@ -7,7 +8,7 @@ using namespace std;
 void UI();
 void RLC();
 void Huff();
-void JEPG();
+void JPEG();
 
 
 int main()
@@ -27,8 +28,8 @@ int main()
 			system("pause");
 			break;
 		}
-		else if (cmd == "JPEG-Form compression") {
-
+		else if (cmd == "JPEG-lossy") {
+			JPEG();
 			system("pause");
 			break;
 		}
@@ -55,7 +56,7 @@ void RLC()
 	cout << "Compression .bmp file...";
 	ReadBMPFile file;
 	if (location != "NULL") {
-		file = ReadBMPFile(location, name);
+		file = ReadBMPFile(name, location);
 	}
 	else {
 		file = ReadBMPFile(name);
@@ -101,9 +102,29 @@ void Huff()
 	cout << "Successfully compress and decompress the BMP File!" << endl;
 }
 
-void JEPG()
+void JPEG()
 {
+	string location, name;
+	cout << "Please input the BMP file location(NULL means current location):";
+	cin >> location;
+	cout << "Please input the BMP file name(not NULL):";
+	cin >> name;
 
+	cout << "Compression .bmp file...";
+	ReadBMPFile file;
+	if (location != "NULL") {
+		file = ReadBMPFile(location, name);
+	}
+	else {
+		file = ReadBMPFile(name);
+	}
+	JpegEncoder encoder(file.getinfo());
+	cout << "Please input the quality scale: ";
+	cin >> encoder.quality_scale;
+	encoder.compress();
+	cout << "Compression finished!";
+
+	cout << "Successfully compress the BMP File and encode it to JPG File" << endl;
 }
 
 void UI()
@@ -120,7 +141,7 @@ void UI()
 	cout << "    The following command is available:" << endl;
 	cout << "        RLCcompression			| Run-Length-Coding lossless compression" << endl;
 	cout << "        HuffmanCompression		| Huffman coding based lossless compression" << endl;
-	cout << "        JPEG-Form compression		| use DCT & quantization & output JPEG" << endl;
+	cout << "        JPEG-lossy			| use DCT & quantization & output JPEG" << endl;
 	cout << "        clear				| clear screen" << endl;
 	cout << "        exit				| exit program" << endl;
 	cout << "========================BMP File Compression=========================" << endl;
@@ -131,5 +152,17 @@ void UI()
 /*
 HuffmanCompression
 NULL
+bmp.bmp
+*/
+
+/*
+RLCcompression
+NULL
+bmp.bmp
+*/
+
+/*
+RLCcompression
+E:\
 bmp.bmp
 */

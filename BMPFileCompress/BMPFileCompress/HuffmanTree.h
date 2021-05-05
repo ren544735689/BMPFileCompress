@@ -22,12 +22,11 @@ typedef struct
 	unsigned int lchild;
 	unsigned int rchild;
 	unsigned int size;    //all size of this node(include itself and its child)
-} HuffmanTreeNode;
+} HuffmanTNode;
 
-HuffmanTreeNode* initialHuffmanTree(int *size, string huffmanTreeFile, string characterSetFile);
-void select(HuffmanTreeNode *huffmanArray, int boundary, int *minWeightIndex,
-	int*secondMinWeightIndex);
-bool encode(HuffmanTreeNode *huffmanArray, int size, string fileRes, string ileDes);
-bool decode(HuffmanTreeNode *huffmanArray, int size, string fileRes, string fileDes);
+HuffmanTNode* initial(int *size, string huffmanTreeFile, string SetFile);
+void find(HuffmanTNode *huffmanArray, int sum, int *minid, int* mminid);
+bool encode(HuffmanTNode *huffmanArray, int size, string fileRes, string ileDes);
+bool decode(HuffmanTNode *huffmanArray, int size, string fileRes, string fileDes);
 
 #endif // !_HUFFMANTREE

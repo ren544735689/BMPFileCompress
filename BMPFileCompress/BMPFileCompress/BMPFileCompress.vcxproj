@@ -126,12 +126,14 @@
     <ClInclude Include="Compress.h" />
     <ClInclude Include="HuffmanCompress.h" />
     <ClInclude Include="HuffmanTree.h" />
+    <ClInclude Include="LossyCompress.h" />
     <ClInclude Include="RLCCompress.h" />
     <ClInclude Include="ReadBMPFile.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HuffmanCompress.cpp" />
     <ClCompile Include="HuffmanTree.cpp" />
+    <ClCompile Include="LossyCompress.cpp" />
     <ClCompile Include="RLCCompress.cpp" />
     <ClCompile Include="ReadBMPFile.cpp" />
     <ClCompile Include="UI.cpp" />
